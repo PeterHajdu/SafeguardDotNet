@@ -3,23 +3,25 @@ using System.Collections.Generic;
 using OneIdentity.SafeguardDotNet.Event;
 using RestSharp;
 using RestSharp.Authenticators;
+using System.Security;
 
 namespace OneIdentity.SafeguardDotNet
 {
     /// <summary>
     /// This is the reusable connection interface that can be used to call SPS API.
     /// </summary>
-    public class SafeguardSessionsConnection : ISafeguardSessionsConnection
+    internal class SafeguardSessionsConnection : ISafeguardSessionsConnection
     {
         private readonly RestClient _client;
-        public SafeguardSessionsConnection(string networkAddress)
+        public SafeguardSessionsConnection(string networkAddress, string username,
+            SecureString password, bool ignoreSsl = false)
         {
             var spsApiUrl = $"https://{networkAddress}/api";
             _client = new RestClient(spsApiUrl);
-
-            // curl --basic --user "admin:PYszFHvC>66BiI-TL7W3" --cookie-jar cookies --insecure https://20.76.79.111:4000/api/authentication
-            _client.Authenticator = new HttpBasicAuthenticator("admin", "a");
-            _client.RemoteCertificateValidationCallback += (sender, certificate, chain, errors) => true;
+            _client.Authenticator = new HttpBasicAuthenticator(username, password.ToString());
+            if (ignoreSsl) {
+              _client.RemoteCertificateValidationCallback += (sender, certificate, chain, errors) => true;
+            }
             var request = new RestRequest("authentication", RestSharp.Method.GET);
             var valami = _client.Get(request);
             Console.Write(valami.Content);

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security;
 using OneIdentity.SafeguardDotNet;
 
 namespace sps
@@ -8,7 +9,9 @@ namespace sps
         static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
-            var asd = new SafeguardSessionsConnection("10.12.224.172");
+            var pass = new SecureString();
+            pass.AppendChar('a');
+            var asd = SafeguardForPrivilegedSessions.Connect("10.12.224.172", "admin", pass, true);
             var result = asd.InvokeMethodFull(Method.Get, "setup");
             Console.Write("1\n");
             Console.Write(result.Body);
