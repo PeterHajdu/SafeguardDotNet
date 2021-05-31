@@ -19,12 +19,18 @@ namespace OneIdentity.SafeguardDotNet
             var spsApiUrl = $"https://{networkAddress}/api";
             _client = new RestClient(spsApiUrl);
             _client.Authenticator = new HttpBasicAuthenticator(username, password.ToString());
-            if (ignoreSsl) {
-              _client.RemoteCertificateValidationCallback += (sender, certificate, chain, errors) => true;
+            if (ignoreSsl)
+            {
+                _client.RemoteCertificateValidationCallback += (sender, certificate, chain, errors) => true;
             }
             var request = new RestRequest("authentication", RestSharp.Method.GET);
-            var valami = _client.Get(request);
-            Console.Write(valami.Content);
+            var response = _client.Get(request);
+            if (!response.IsSuccessful)
+                throw new SafeguardDotNetException(
+                    "Error returned when authenticating to sps api, Error: " + $"{response.StatusCode} {response.Content}",
+                    response.StatusCode, response.Content);
+            Console.WriteLine("printing conn result");
+            Console.WriteLine(response.Content);
         }
 
         /// <summary>
@@ -43,6 +49,8 @@ namespace OneIdentity.SafeguardDotNet
             TimeSpan? timeout = null)
         {
             var request = new RestRequest(relativeUrl, method.ConvertToRestSharpMethod());
+            if ((method == Method.Post || method == Method.Put) && body != null)
+                request.AddParameter("application/json", body, ParameterType.RequestBody);
             var response = _client.Execute(request);
 
             return new FullResponse
