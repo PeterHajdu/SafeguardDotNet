@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using OneIdentity.SafeguardDotNet.Event;
 using RestSharp;
-using OneIdentity.SafeguardDotNet.Authentication;
+using RestSharp.Authenticators;
 
 namespace OneIdentity.SafeguardDotNet
 {
@@ -12,10 +12,15 @@ namespace OneIdentity.SafeguardDotNet
     internal class SafeguardSessionsConnection : ISafeguardSessionsConnection
     {
         private readonly RestClient _client;
-        public SafeguardSessionsConnection(IAuthenticationMechanism authenticationMechanism)
+        public SafeguardSessionsConnection(string networkAddress)
         {
-            var spsApiUrl = $"https://{authenticationMechanism.NetworkAddress}/api";
+            var spsApiUrl = $"https://{networkAddress}/api";
             _client = new RestClient(spsApiUrl);
+
+            // curl --basic --user "admin:PYszFHvC>66BiI-TL7W3" --cookie-jar cookies --insecure https://20.76.79.111:4000/api/authentication
+            _client.Authenticator = new HttpBasicAuthenticator("admin", "a");
+            var request = new RestRequest("authentication", RestSharp.Method.GET);
+            _client.Execute(request);
         }
 
         /// <summary>
@@ -38,9 +43,9 @@ namespace OneIdentity.SafeguardDotNet
 
             return new FullResponse
             {
-                StatusCode = System.Net.HttpStatusCode.BadRequest,
+                StatusCode = response.StatusCode,
                 Headers = new Dictionary<string, string>(),
-                Body = ""
+                Body = response.Content
             };
         }
     }
