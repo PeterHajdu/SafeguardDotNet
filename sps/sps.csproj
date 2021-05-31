@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SafeguardDotNet\SafeguardDotNet.csproj">
+      <Project>{e2a99b0b-7037-4ff0-aecd-c3afae5b068f}</Project>
+      <Name>SafeguardDotNet</Name>
+    </ProjectReference>
+  </ItemGroup>
+
+</Project>
