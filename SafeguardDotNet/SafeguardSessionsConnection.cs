@@ -19,8 +19,10 @@ namespace OneIdentity.SafeguardDotNet
 
             // curl --basic --user "admin:PYszFHvC>66BiI-TL7W3" --cookie-jar cookies --insecure https://20.76.79.111:4000/api/authentication
             _client.Authenticator = new HttpBasicAuthenticator("admin", "a");
+            _client.RemoteCertificateValidationCallback += (sender, certificate, chain, errors) => true;
             var request = new RestRequest("authentication", RestSharp.Method.GET);
-            _client.Execute(request);
+            var valami = _client.Get(request);
+            Console.Write(valami.Content);
         }
 
         /// <summary>
