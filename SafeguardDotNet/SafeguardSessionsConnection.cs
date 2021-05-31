@@ -9,7 +9,7 @@ namespace OneIdentity.SafeguardDotNet
     /// <summary>
     /// This is the reusable connection interface that can be used to call SPS API.
     /// </summary>
-    internal class SafeguardSessionsConnection : ISafeguardSessionsConnection
+    public class SafeguardSessionsConnection : ISafeguardSessionsConnection
     {
         private readonly RestClient _client;
         public SafeguardSessionsConnection(string networkAddress)
