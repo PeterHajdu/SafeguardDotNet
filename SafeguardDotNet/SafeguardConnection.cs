@@ -166,6 +166,13 @@ namespace OneIdentity.SafeguardDotNet
         {
             if (_disposed)
                 throw new ObjectDisposedException("SafeguardConnection");
+
+            var request = new JoinRequest {
+              spp = _authenticationMechanism.NetworkAddress,
+              spp_api_token = _authenticationMechanism.GetAccessToken().ToInsecureString(),
+              spp_cert_chain = CertificateChain
+            };
+
             return null;
         }
 
