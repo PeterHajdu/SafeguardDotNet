@@ -5,8 +5,7 @@ using OneIdentity.SafeguardDotNet.Authentication;
 using OneIdentity.SafeguardDotNet.Event;
 using RestSharp;
 using Serilog;
-using System.Text.Json;
-
+using Newtonsoft.Json;
 
 namespace OneIdentity.SafeguardDotNet
 {
@@ -175,11 +174,13 @@ namespace OneIdentity.SafeguardDotNet
                 spp_api_token = _authenticationMechanism.GetAccessToken().ToInsecureString(),
                 spp_cert_chain = CertificateChain
             };
-            var json = JsonSerializer.Serialize(request);
+            var json = JsonConvert.SerializeObject(request);
+            Console.WriteLine(json);
 
-            var result = SpsConnection.InvokeMethodFull(Method.Get, "cluster/sps", json);
+            var fullResponse = SpsConnection.InvokeMethodFull(Method.Get, "cluster/sps", json);
+            LogResponseDetails(fullResponse);
 
-            return null;
+            return fullResponse;
         }
 
         public ISafeguardEventListener GetEventListener()

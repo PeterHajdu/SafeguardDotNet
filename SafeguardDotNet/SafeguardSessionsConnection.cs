@@ -53,6 +53,14 @@ namespace OneIdentity.SafeguardDotNet
                 request.AddParameter("application/json", body, ParameterType.RequestBody);
             var response = _client.Execute(request);
 
+            if (response.ResponseStatus != ResponseStatus.Completed)
+                throw new SafeguardDotNetException($"Unable to connect to web service {_client.BaseUrl}, Error: " +
+                                                   response.ErrorMessage);
+            if (!response.IsSuccessful)
+                throw new SafeguardDotNetException(
+                    "Error returned from SPS API, Error: " + $"{response.StatusCode} {response.Content}",
+                    response.StatusCode, response.Content);
+
             return new FullResponse
             {
                 StatusCode = response.StatusCode,
