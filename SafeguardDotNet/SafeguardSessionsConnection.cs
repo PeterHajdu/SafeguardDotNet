@@ -18,7 +18,7 @@ namespace OneIdentity.SafeguardDotNet
         {
             var spsApiUrl = $"https://{networkAddress}/api";
             _client = new RestClient(spsApiUrl);
-            _client.Authenticator = new HttpBasicAuthenticator(username, password.ToString());
+            _client.Authenticator = new HttpBasicAuthenticator(username, password.ToInsecureString());
             if (ignoreSsl)
             {
                 _client.RemoteCertificateValidationCallback += (sender, certificate, chain, errors) => true;
