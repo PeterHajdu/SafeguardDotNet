@@ -162,6 +162,13 @@ namespace OneIdentity.SafeguardDotNet
             return InvokeMethodFull(service, method, relativeUrl, body, parameters, additionalHeaders, timeout).Body;
         }
 
+        public FullResponse JoinSPS(ISafeguardSessionsConnection SpsConnection, string CertificateChain)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException("SafeguardConnection");
+            return null;
+        }
+
         public ISafeguardEventListener GetEventListener()
         {
             if (_disposed)

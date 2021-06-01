@@ -57,6 +57,8 @@ namespace OneIdentity.SafeguardDotNet
             IDictionary<string, string> additionalHeaders = null,
             TimeSpan? timeout = null);
 
+        FullResponse JoinSPS(ISafeguardSessionsConnection SpsConnection, string CertificateChain);
+
         /// <summary>
         /// Call a Safeguard API method and get any response as a CSV string. Some Safeguard API
         /// methods will return an empty body. If there is a failure a SafeguardDotNetException
