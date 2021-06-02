@@ -170,14 +170,14 @@ namespace OneIdentity.SafeguardDotNet
 
             var request = new JoinRequest
             {
-                spp = _authenticationMechanism.NetworkAddress,
+                spp = "todofix",
                 spp_api_token = _authenticationMechanism.GetAccessToken().ToInsecureString(),
                 spp_cert_chain = CertificateChain
             };
             var json = JsonConvert.SerializeObject(request);
             Console.WriteLine(json);
 
-            var fullResponse = SpsConnection.InvokeMethodFull(Method.Get, "cluster/spp", json);
+            var fullResponse = SpsConnection.InvokeMethodFull(Method.Post, "cluster/spp", json);
             LogResponseDetails(fullResponse);
 
             return fullResponse;

@@ -22,7 +22,11 @@ namespace sps
 
             var joinResponse = sppConn.JoinSPS(spsConn, certChain);
             Console.WriteLine("join finished with response:");
-            Console.WriteLine(joinResponse);
+            Console.WriteLine(joinResponse.Body);
+
+            Console.WriteLine("status");
+            var statusResponse = spsConn.InvokeMethodFull(Method.Get, "cluster/spp", "{}");
+            Console.WriteLine(statusResponse.Body);
         }
     }
 }
