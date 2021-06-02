@@ -4,6 +4,7 @@ using OneIdentity.SafeguardDotNet.Event;
 using RestSharp;
 using RestSharp.Authenticators;
 using System.Security;
+using System.Net;
 
 namespace OneIdentity.SafeguardDotNet
 {
@@ -18,6 +19,9 @@ namespace OneIdentity.SafeguardDotNet
         {
             var spsApiUrl = $"https://{networkAddress}/api";
             _client = new RestClient(spsApiUrl);
+            CookieContainer _cookieJar = new CookieContainer();
+            _client.CookieContainer = _cookieJar;
+
             _client.Authenticator = new HttpBasicAuthenticator(username, password.ToInsecureString());
             if (ignoreSsl)
             {
