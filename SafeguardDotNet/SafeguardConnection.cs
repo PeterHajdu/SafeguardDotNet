@@ -177,7 +177,7 @@ namespace OneIdentity.SafeguardDotNet
             var json = JsonConvert.SerializeObject(request);
             Console.WriteLine(json);
 
-            var fullResponse = SpsConnection.InvokeMethodFull(Method.Get, "cluster/sps", json);
+            var fullResponse = SpsConnection.InvokeMethodFull(Method.Get, "cluster/spp", json);
             LogResponseDetails(fullResponse);
 
             return fullResponse;
