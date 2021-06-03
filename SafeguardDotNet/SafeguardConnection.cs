@@ -6,6 +6,7 @@ using OneIdentity.SafeguardDotNet.Event;
 using RestSharp;
 using Serilog;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace OneIdentity.SafeguardDotNet
 {
@@ -168,19 +169,54 @@ namespace OneIdentity.SafeguardDotNet
             if (_disposed)
                 throw new ObjectDisposedException("SafeguardConnection");
 
+            EnableClusterInterfaceOnSps(SpsConnection);
+            PromoteSpsToCentralManagement(SpsConnection);
+
             var request = new JoinRequest
             {
                 spp = "todofix",
                 spp_api_token = _authenticationMechanism.GetAccessToken().ToInsecureString(),
                 spp_cert_chain = CertificateChain
             };
-            var json = JsonConvert.SerializeObject(request);
-            Console.WriteLine(json);
+            var joinBody = JsonConvert.SerializeObject(request);
 
-            var fullResponse = SpsConnection.InvokeMethodFull(Method.Post, "cluster/spp", json);
-            LogResponseDetails(fullResponse);
+            var joinResponse = SpsConnection.InvokeMethodFull(Method.Get, "cluster/spp", joinBody);
+            LogResponseDetails(joinResponse);
 
-            return fullResponse;
+            return joinResponse;
+        }
+
+        internal static void EnableClusterInterfaceOnSps(ISafeguardSessionsConnection SpsConnection)
+        {
+            var getClusterStatusResponse = SpsConnection.InvokeMethodFull(Method.Get, "configuration/local_services/cluster");
+            JObject obj = JObject.Parse(getClusterStatusResponse.Body);
+            string listenAddress = (string)obj["body"]["listen_address"]["key"];
+
+            SpsConnection.InvokeMethodFull(Method.Post, "transaction");
+
+            var clusterIf = new SpsClusterRequest
+            {
+                enabled = true,
+                listen_address = listenAddress
+            };
+            var clusterBody = JsonConvert.SerializeObject(clusterIf);
+
+            var enableClusterResponse = SpsConnection.InvokeMethodFull(Method.Put, "configuration/local_services/cluster", clusterBody);
+            Console.WriteLine("cluster enable response:");
+            Console.WriteLine(enableClusterResponse.Body);
+
+            SpsConnection.InvokeMethodFull(Method.Put, "transaction");
+        }
+
+        internal static void PromoteSpsToCentralManagement(ISafeguardSessionsConnection SpsConnection)
+        {
+            SpsConnection.InvokeMethodFull(Method.Post, "transaction");
+
+            var promoteResponse = SpsConnection.InvokeMethodFull(Method.Post, "cluster/promote");
+            Console.WriteLine("promote response:");
+            Console.WriteLine(promoteResponse.Body);
+
+            SpsConnection.InvokeMethodFull(Method.Put, "transaction");
         }
 
         public ISafeguardEventListener GetEventListener()
